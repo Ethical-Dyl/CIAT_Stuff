@@ -2,7 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=".env.local") 
+load_dotenv(dotenv_path=".env") 
 
 
 def getWeather(api_key, user_city):
@@ -15,7 +15,7 @@ def getWeather(api_key, user_city):
         print(f"The current temperature in {user_city} is {temp} with {desc}.")
         return temp
     else:
-        print("Could not retrieve weather data. Check your city spelling, or make sure you added your API key in .env.local or followed instructions on line 39. ")
+        print("Could not retrieve weather data. Check your city spelling, or make sure you added your API key in .env or followed instructions on line 39. ")
         return None
 
 def setClothing(temp):
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     #api_key = "[Enter Your api_key here]"
     api_key = os.getenv("api_key")
     if not api_key:
-        print("API key not found. Either check your .env.local file or just simply uncomment out line 39 and comment lines 40, 41, and 42 and " \
+        print("API key not found. Either check your .env file or just simply uncomment out line 39 and comment lines 40, 41, and 42 and " \
         "enter in your own API key from this link. https://openweathermap.org/api")
     user_city = input('Enter in your city: ')
     temp = getWeather(api_key, user_city)
