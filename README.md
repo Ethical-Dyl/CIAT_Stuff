@@ -118,7 +118,7 @@ Please follow PEP 8, include clear docstrings, and update this README if you ad
 ## 📧 Contact
 
 Questions or feedback?  
-- Open an [issue](https://github.com/YOUR-USERNAME/CIAT_Stuff/issues)
+- Open an [issue](https://github.com/Ethical-Dyl/py_fun/issues/)
 
 ---
 
