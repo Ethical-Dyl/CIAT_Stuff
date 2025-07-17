@@ -1,4 +1,4 @@
-# CIAT_Stuff
+# py_fun
 
 ![Python 3.6+](https://img.shields.io/badge/python-3.6%2B-blue.svg) ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 
