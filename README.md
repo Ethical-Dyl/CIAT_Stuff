@@ -128,6 +128,6 @@ If you find these scripts useful:
 - ⭐ Star the repo  
 - ➕ Follow me on GitHub  
 - 🔄 Share with your network  
-- 🔗 Connect on [LinkedIn](https://www.linkedin.com/in/dylan-paynter)  
+- 🔗 Connect on [LinkedIn](https://www.linkedin.com/in/dylanpaynter)  
 
 *Happy coding!*  
