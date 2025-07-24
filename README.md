@@ -16,6 +16,7 @@
 | **bmi.py**         | Calculate BMI from inches/lbs to meters/kg, showcasing best practices with docstrings & functions.| ❌ **No**        |
 | **sum_string.py**  | Sum digits in a string (ignores non-digits) and report invalid characters.                      | ❌ **No**        |
 | **weather.py**     | Check local weather and receive clothing recommendations.                                       | ⚠️ **Yes**       |
+| **KayneWest.py**  | Attempt to turn on all of the lights in a home and get feedback ifthey did not not.                      | ❌ **No**        |
 
 ---
 
@@ -90,6 +91,10 @@ Type any string of characters; it sums the digits and flags non-digit inputs.
 ### weather.py ⚠️  
 **Local Weather + Clothing Tips**  
 Fetch your local forecast and get outfit recommendations.
+
+### KanyeWest.py
+**Showcasing what a user-defined function**
+Attempt to turn on lights in a house - using randint to determine if it is in an on or off state.
 
 ---
 
