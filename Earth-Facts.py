@@ -1,49 +1,141 @@
-# Step 1. Program 1. Write a Python program that includes at least one outer loop and one inner loop.
+"""Display random Earth facts from the Bootprint API."""
 
-import requests # I am importing the requests module for my API call on line 18
+import requests
 
-seen_facts = 0 # I am creating a var that has a value of 0, this is a counter used for our first while loop.
+EARTH_FACT_URL = "https://api.bootprint.space/fact/earth"
+REQUEST_TIMEOUT_SECONDS = 5
 
-# Below is the while loop(s), the first loop asks the user if they would like to see some facts about earth.
-# If they say no the program ends and a goodbye message prompts. 
-# If they say yes then the second loop will be iterated, generating the first facts and then adding +1 to the seen_facts counter.
-# In the second loop they will be asked if they would like to see more facts, if yes they see more and loop again, if no the program exits. 
 
-while seen_facts < 1: # First Loop
+class EarthFactError(RuntimeError):
+    """Raised when an Earth fact cannot be retrieved or validated."""
+
+
+def fetch_earth_fact():
+    """Request one Earth fact and return it as a clean string."""
     try:
-        see_space = input('Would you like to see some Earth facts? [yes, no] ')
-        if see_space.lower() == "yes": #The .lower() ensures the user can enter Yes, yes, No, no. 
-            while True: # Second Loop
-                try: 
-                    response = requests.get('https://api.bootprint.space/all/earth') # This is a free api, no auth or apikeys needed
-                    data = response.json() # Here I get the response and place it in the data variable for parsing
-                    fact = data['fact'] # Here I take the 'fact' entry from the json response from the variable above 'data'
-                    print(fact) 
-                    seen_facts += 1 # Increase coutner so the user won't get prompted again once in the first loop if they say no in this second loop
-                    see_more = input('Would you like to see more Earth facts? ')
-                    if see_more.lower() == "yes":
-                            continue
-                    if see_more.lower() == "no":
-                            print('Hope you learned something new!')
-                            exit(0)
-                    else:
-                         raise ValueError # If this is raised (called on) the ValueError exeption is called. 
-                    
+        response = requests.get(
+            EARTH_FACT_URL,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
 
-                except KeyboardInterrupt: # The user hit CTRL + C.
-                    print('User Exit')
-                except ValueError: # The user entered in a response other than yes or no.
-                    print('please answer yes or no')
-        
+    except requests.Timeout as exc:
+        raise EarthFactError("The request timed out. Please try again.") from exc
 
-        if see_space.lower() == "no":
-             print('No worries, goodbye!')
-             exit(0)
-        else:
-             raise ValueError # Same as other
+    except requests.ConnectionError as exc:
+        raise EarthFactError("The Earth-fact service could not be reached.") from exc
+
+    except requests.HTTPError as exc:
+        status_code = (
+            exc.response.status_code if exc.response is not None else "unknown"
+        )
+
+        raise EarthFactError(
+            f"The Earth-fact service returned HTTP status {status_code}."
+        ) from exc
+
+    except requests.RequestException as exc:
+        raise EarthFactError("An unexpected network error occurred.") from exc
+
+    try:
+        data = response.json()
+
+    except ValueError as exc:
+        raise EarthFactError(
+            "The Earth-fact service returned invalid JSON data."
+        ) from exc
+
+    if not isinstance(data, dict):
+        raise EarthFactError("The Earth-fact service returned an unexpected response.")
+
+    fact = data.get("fact")
+
+    if not isinstance(fact, str) or not fact.strip():
+        raise EarthFactError("The Earth-fact service did not return a usable fact.")
+
+    return fact.strip()
 
 
-    except KeyboardInterrupt: # Same as other
-          print('User Exit')
-    except ValueError: # Same as other
-          print('please answer yes or no')
+def ask_yes_no(prompt):
+    """Prompt until the user enters yes/y or no/n."""
+    while True:
+        answer = input(prompt).strip().lower()
+
+        if answer in {"yes", "y"}:
+            return True
+
+        if answer in {"no", "n"}:
+            return False
+
+        print("Please answer yes/y or no/n.")
+
+
+def main():
+    """Run the Earth Facts command-line program."""
+    seen_facts = 0
+
+    try:
+        # Outer loop
+        while True:
+            see_space = (
+                input("Would you like to see some Earth facts? [yes/no] ")
+                .strip()
+                .lower()
+            )
+
+            if see_space in {"no", "n"}:
+                print("No worries, goodbye!")
+                return 0
+
+            if see_space not in {"yes", "y"}:
+                print("Please answer yes/y or no/n.")
+                continue
+
+            # Inner loop
+            while True:
+                try:
+                    fact = fetch_earth_fact()
+
+                except EarthFactError as exc:
+                    print(f"\nError: {exc}")
+
+                    retry_request = ask_yes_no(
+                        "Would you like to retry the request? [yes/no] "
+                    )
+
+                    if retry_request:
+                        continue
+
+                    print("Goodbye!")
+                    return 1
+
+                seen_facts += 1
+
+                print(f"\nEarth fact #{seen_facts}:")
+                print(fact)
+
+                see_more = ask_yes_no(
+                    "\nWould you like to see another Earth fact? [yes/no] "
+                )
+
+                if not see_more:
+                    fact_word = "fact" if seen_facts == 1 else "facts"
+
+                    print(
+                        f"Hope you learned something new! "
+                        f"You viewed {seen_facts} Earth {fact_word}."
+                    )
+
+                    return 0
+
+    except KeyboardInterrupt:
+        print("\nUser exit. Goodbye!")
+        return 130
+
+    except EOFError:
+        print("\nInput ended. Goodbye!")
+        return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
